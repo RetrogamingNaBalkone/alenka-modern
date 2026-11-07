@@ -1,0 +1,64 @@
+# Independent DOSBox 0.85.1 original framebuffer checks; 2026-11-07.
+# See docs/reverse-engineering.md for capture provenance.
+advance 605
+check 6fbff902fd845db0
+key 42 1 632
+advance 756
+check 78b7d2e3efd2c1e8
+key 54 1 783
+advance 893
+check 4556c2f5b209992e
+key 54 0 934
+advance 1030
+check 4ad6f0c6f54e1de3
+key 42 0 1072
+advance 1195
+check bbdbfb2d6961373e
+key 42 1 1236
+advance 1360
+check 4ad6f0c6f54e1de3
+key 54 1 1374
+advance 1483
+check 46f81cf5449d1b16
+key 54 0 1511
+advance 1621
+check 78b7d2e3efd2c1e8
+key 42 0 1635
+advance 1758
+check 6fbff902fd845db0
+key 58 1 1786
+advance 1909
+check c1bfe5892acbc260
+key 58 0 1923
+advance 2046
+check ebfd324ef89c5711
+key 28 1 2060
+advance 2170
+check 48e9a71783558d49
+key 28 0 2198
+advance 2294
+check 6670e6d4ce04b259
+key 37 1 2321
+advance 2431
+check ed56d5791f0ab7f1
+key 37 0 2445
+advance 2582
+check 6670e6d4ce04b259
+key 28 1 2582
+advance 2706
+check 17994053fbf2d35f
+key 28 0 2719
+advance 2788
+check e74eed337d74e7cf
+key 59 1 2815
+advance 2939
+check 1ab85d9739ba92da
+key 59 0 2939
+advance 3090
+check 1ab85d9739ba92da
+key 30 1 3118
+advance 3255
+check ca7dffb1c44fdb0b
+key 30 0 3269
+advance 3406
+check ebfd324ef89c5711

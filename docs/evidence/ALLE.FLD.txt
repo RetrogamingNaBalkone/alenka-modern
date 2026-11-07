@@ -1,0 +1,7 @@
+Ghidra resource analysis: ALLE.FLD
+0000:0000 version = 0
+0000:0002 legacy_pointer = 13368
+0000:0004 cell_count_lo = 21920
+0000:0006 cell_count_hi = 0
+0000:0008 columns = 80
+0000:000a rows = 274

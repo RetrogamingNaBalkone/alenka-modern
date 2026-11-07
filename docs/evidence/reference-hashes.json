@@ -1,0 +1,14 @@
+{
+  "intro": {
+    "fnv1a_bgra": "2b634ec7e360171c",
+    "raw_sha256": "f592fbf96f44c91024230f12afa74528604c2428d992365c14e55a16e563bbc4"
+  },
+  "help": {
+    "fnv1a_bgra": "1ab85d9739ba92da",
+    "raw_sha256": "9cec86e365fc4c121cf50a9b9b5b0f977770fa3b5087c811fb68fda6c966bed0"
+  },
+  "main": {
+    "fnv1a_bgra": "6fbff902fd845db0",
+    "raw_sha256": "6016cccd986813dffbcb9f613332cd97e5cd6d6db10cb4e485cb59cf75ad3f34"
+  }
+}
