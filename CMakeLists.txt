@@ -3,6 +3,9 @@ project(alenka-modern VERSION 1.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+if(MSVC)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/utf-8>")
+endif()
 find_package(SDL2 CONFIG REQUIRED)
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_custom_target(alenka-assets ALL
@@ -13,7 +16,7 @@ add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/english_course.
         "${CMAKE_CURRENT_BINARY_DIR}/generated/english_course.hpp"
     DEPENDS tools/embed_course.py resources/lessons-en.txt resources/eng-button.txt
     VERBATIM)
-add_library(alenka-original src/original.cpp src/trainer.cpp
+add_library(alenka-original src/original.cpp src/trainer.cpp src/profile.cpp src/session.cpp
     "${CMAKE_CURRENT_BINARY_DIR}/generated/english_course.hpp")
 target_include_directories(alenka-original PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_include_directories(alenka-original PUBLIC src)
@@ -36,6 +39,8 @@ add_executable(trainer-trace tests/trainer_trace.cpp)
 target_link_libraries(trainer-trace PRIVATE alenka-original)
 add_executable(trainer-tests tests/trainer_tests.cpp)
 target_link_libraries(trainer-tests PRIVATE alenka-original)
+add_executable(profile-tests tests/profile_tests.cpp)
+target_link_libraries(profile-tests PRIVATE alenka-original)
 add_executable(audio-tests tests/audio_tests.cpp)
 target_include_directories(audio-tests PRIVATE src)
 target_link_libraries(audio-tests PRIVATE SDL2::SDL2)
@@ -45,6 +50,9 @@ add_test(NAME english-resources COMMAND "${Python3_EXECUTABLE}" -m unittest disc
 add_test(NAME audio-playback COMMAND audio-tests)
 add_test(NAME original-resources COMMAND core-tests "${CMAKE_CURRENT_SOURCE_DIR}/original/ALENKA")
 add_test(NAME original-course COMMAND trainer-tests "${CMAKE_CURRENT_SOURCE_DIR}/original/ALENKA")
+add_test(NAME profiles COMMAND profile-tests "${CMAKE_CURRENT_SOURCE_DIR}/original/ALENKA")
+add_test(NAME profile-ui COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/verify_ui.py"
+    $<TARGET_FILE:profile-tests> "${CMAKE_CURRENT_SOURCE_DIR}/original/ALENKA")
 file(GLOB ALENKA_SCENARIOS "${CMAKE_CURRENT_SOURCE_DIR}/tests/scenarios/*.trace")
 foreach(SCENARIO IN LISTS ALENKA_SCENARIOS)
     get_filename_component(SCENARIO_NAME "${SCENARIO}" NAME_WE)

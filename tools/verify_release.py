@@ -11,7 +11,10 @@ FILES = {
 
 
 def verify(package, archive):
-    actual = {p.relative_to(package).as_posix() for p in package.rglob('*') if p.is_file()}
+    # Updating a development package must preserve locally created profiles.
+    # The ZIP still contains exactly FILES, with no personal data.
+    actual = {p.relative_to(package).as_posix() for p in package.rglob('*')
+              if p.is_file() and p.relative_to(package).parts[0] not in {'profiles', 'alenka.ini', '.alenka.lock'}}
     if actual != FILES:
         raise ValueError(f'Unexpected release contents: extra={actual-FILES}, missing={FILES-actual}')
     with ZipFile(archive) as zipped:

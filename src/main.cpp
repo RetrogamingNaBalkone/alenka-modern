@@ -3,6 +3,7 @@
 #include "original.hpp"
 #include "trainer.hpp"
 #include "audio.hpp"
+#include "session.hpp"
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -201,7 +202,7 @@ void smoke(SDL_Window* window,const alenka::Original& original) {
     {
         alenka::Trainer trainer(original,alenka::Screen::main);
         bool running=true;
-        trainer.key(99,true,0);trainer.key(99,false,0);
+        for(unsigned i=0;i<3;++i) { trainer.key(99,true,0);trainer.key(99,false,0); }
         trainer.key(95,true,0);trainer.key(95,false,0); // Enable typo mode.
         trainer.key(37,true,0);trainer.key(37,false,0); // Begin typing.
         KeyboardRouter router(window,trainer);
@@ -213,7 +214,27 @@ void smoke(SDL_Window* window,const alenka::Original& original) {
             key.keysym.scancode=SDL_SCANCODE_LALT;key.keysym.sym=SDLK_LALT;key.keysym.mod=0;router.key(key,0,running);
         }
         if(!running||trainer.position()!=1) throw std::runtime_error("Alt+Enter was consumed as exercise input");
+        SDL_KeyboardEvent close{};close.type=SDL_KEYDOWN;close.keysym.mod=KMOD_LALT;
+        close.keysym.scancode=SDL_SCANCODE_F4;close.keysym.sym=SDLK_F4;
+        router.key(close,0,running);
+        if(running||trainer.position()!=1) throw std::runtime_error("Alt+F4 was consumed as exercise input");
         std::cout<<"Fullscreen shortcuts leave exercise input unchanged\n";
+    }
+    {
+        alenka::Trainer editor(original,alenka::Screen::main);
+        editor.key(95,true,0);editor.key(95,false,0); // Profile menu.
+        editor.key(28,true,0);editor.key(28,false,0); // Rename.
+        if(!editor.editing_name()) throw std::runtime_error("Profile text editor did not open");
+        SDL_StartTextInput();
+        SDL_Event text{};text.type=SDL_TEXTINPUT;
+        SDL_strlcpy(text.text.text,u8"Анна",sizeof(text.text.text));
+        if(SDL_PushEvent(&text)<0) throw std::runtime_error("Cannot queue SDL text input");
+        SDL_Event received;
+        while(SDL_PollEvent(&received)) if(received.type==SDL_TEXTINPUT) editor.text_input(received.text.text);
+        editor.key(28,true,0);editor.key(28,false,0);
+        if(editor.take_action().value!=u8"ИгрокАнна") throw std::runtime_error("SDL Unicode name input failed");
+        SDL_StopTextInput();
+        std::cout<<"SDL Unicode profile name input verified\n";
     }
     // Real SDL window transitions, not a mock of SDL's flags or cursor state.
     if (fullscreen(window)) toggle_fullscreen(window);
@@ -250,6 +271,10 @@ int main(int argc, char** argv) {
                 alenka::frame_width, alenka::frame_height)), SDL_DestroyTexture);
         if (options.fullscreen) toggle_fullscreen(window.get());
         alenka::Trainer trainer(original,options.screen);
+        std::unique_ptr<alenka::Session> session;
+        if(!options.smoke&&options.capture.empty()&&options.input_log.empty())
+            session=std::make_unique<alenka::Session>(trainer,std::filesystem::current_path());
+        SDL_StopTextInput();
         alenka::Audio audio;
         bool focused=(SDL_GetWindowFlags(window.get()) & SDL_WINDOW_INPUT_FOCUS)!=0;
         KeyboardRouter keyboard(window.get(),trainer);
@@ -266,7 +291,8 @@ int main(int argc, char** argv) {
         while (running) {
             SDL_Event event;
             while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT) running = false;
+                bool close_requested=event.type==SDL_QUIT;
+                if(event.type==SDL_TEXTINPUT) trainer.text_input(event.text.text);
                 if (event.type == SDL_WINDOWEVENT &&
                     (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST))
                 {
@@ -274,17 +300,27 @@ int main(int argc, char** argv) {
                     cursor(fullscreen(window.get()),focused);
                     if(!focused) { keyboard.blur(); audio.stop(); trainer.take_sounds(); }
                 }
-                if (event.type != SDL_KEYDOWN && event.type != SDL_KEYUP) continue;
-                if(input_log.is_open()) {
+                if(input_log.is_open()&&(event.type==SDL_KEYDOWN||event.type==SDL_KEYUP)) {
                     input_log<<event.type<<' '<<event.key.keysym.scancode<<' '<<event.key.keysym.sym<<' '
                         <<event.key.keysym.mod<<' '<<unsigned(event.key.repeat)<<' '
                         <<original_scan(event.key.keysym.scancode)<<'\n';
                     input_log.flush();
                 }
-                keyboard.key(event.key,SDL_GetTicks64(),running);
+                if(event.type==SDL_KEYDOWN||event.type==SDL_KEYUP) {
+                    bool keep_running=true;
+                    keyboard.key(event.key,SDL_GetTicks64(),keep_running);
+                    close_requested=close_requested||!keep_running;
+                }
+                if(session) { if(session->update(close_requested)) running=false; }
+                else if(close_requested) running=false;
+                if(trainer.editing_name()&&!SDL_IsTextInputActive()) SDL_StartTextInput();
+                if(!trainer.editing_name()&&SDL_IsTextInputActive()) SDL_StopTextInput();
                 dirty=true;
+                if(!running) break;
             }
+            if(!running) break;
             trainer.advance(SDL_GetTicks64());
+            if(session&&session->update()) running=false;
             const auto sounds=trainer.take_sounds();
             audio.update(focused&&trainer.sound_enabled()&&(trainer.practicing()||sounds.error),sounds.error,sounds.beat);
             dirty=true;

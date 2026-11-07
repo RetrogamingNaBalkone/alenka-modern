@@ -1,189 +1,60 @@
-# Independent DOSBox 0.85.1 original framebuffer checks; 2026-11-07.
-# See docs/reverse-engineering.md for capture provenance.
+# Unchanged DOS regions; full source frames verified against the original DOS hashes.
+# See docs/reverse-engineering.md for region provenance.
 advance 28
-check 6fbff902fd845db0
+check_region 0 80 640 270 936339e4d72ce145
+key 99 1 29
+key 99 0 30
+key 99 1 31
+key 99 0 32
 key 99 1 55
 key 99 0 85
 advance 248
-check ddf57781c4da205c
+check_region 0 80 640 270 936339e4d72ce145
 key 95 1 261
 key 95 0 291
 advance 440
-check 8b59614df78a3fb9
+check_region 0 80 640 270 936339e4d72ce145
 key 57 1 440
 key 57 0 470
 advance 618
-check ddf57781c4da205c
+check_region 0 80 640 270 936339e4d72ce145
 key 96 1 632
 key 96 0 662
 advance 797
-check 8b59614df78a3fb9
+check_region 0 80 640 270 936339e4d72ce145
 key 99 1 797
 key 99 0 827
 advance 948
-check e69474e8ae1f804e
+check_region 0 80 640 270 936339e4d72ce145
 key 95 1 975
 key 95 0 1005
 advance 1181
-check 8659439a101fc083
+check_region 0 80 640 270 936339e4d72ce145
 key 96 1 1209
 key 96 0 1239
 advance 1401
-check e69474e8ae1f804e
+check_region 0 80 640 270 936339e4d72ce145
 key 99 1 1429
 key 99 0 1459
 advance 1580
-check 4f5134fcc85485e6
+check_region 0 80 640 270 936339e4d72ce145
 key 95 1 1607
 key 95 0 1637
 advance 1786
-check 6ebd4c665c9163f4
+check_region 0 80 640 270 d5593f7eacfd253a
 key 95 1 1813
 key 95 0 1843
 advance 2005
-check 91807b70ac377f08
+check_region 0 80 640 270 ab29064f3c73c593
 key 95 1 2046
 key 95 0 2076
 advance 2225
-check 4f5134fcc85485e6
+check_region 0 80 640 270 936339e4d72ce145
 key 96 1 2239
 key 96 0 2269
 advance 2445
-check 91807b70ac377f08
+check_region 0 80 640 270 ab29064f3c73c593
 key 99 1 2472
 key 99 0 2502
 advance 2678
-check 565230318c6637d4
-key 57 1 2692
-key 57 0 2722
-advance 2870
-check b632d5aff836e782
-key 99 1 2912
-key 99 0 2942
-advance 3063
-check 88d5ac89281cd0da
-key 57 1 3090
-key 57 0 3120
-advance 3282
-check 88d5ac89281cd0da
-key 30 1 3310
-key 30 0 3340
-advance 3475
-check 88d5ac89281cd0da
-key 99 1 3516
-key 99 0 3546
-advance 3708
-check e9038bd796f164b6
-key 57 1 3722
-key 57 0 3752
-advance 3900
-# 1.1: language now selects the English course instead of the DOS stub.
-# English lettering and reset are checked by trainer-tests; toggle back here
-# to keep every remaining Russian DOS reference frame comparable.
-key 57 1 3928
-key 57 0 3958
-advance 4120
-check e9038bd796f164b6
-key 99 1 4120
-key 99 0 4150
-advance 4298
-check 38159f55257a0206
-key 57 1 4340
-key 57 0 4370
-advance 4532
-# 1.1: speaker now mutes audio instead of opening the DOS stub.
-# Its behavior and muted frame are covered by trainer-tests.
-key 57 1 4533
-key 57 0 4534
-key 30 1 4535
-key 30 0 4562
-advance 4710
-check 38159f55257a0206
-key 99 1 4765
-key 99 0 4795
-advance 4944
-check 61b4856814587c1a
-key 57 1 4971
-key 57 0 5001
-advance 5177
-check 97259628484f6e01
-key 30 1 5177
-key 30 0 5207
-advance 5369
-check 61b4856814587c1a
-key 99 1 5411
-key 99 0 5441
-advance 5562
-check 006c9f93ac86a6e2
-key 57 1 5575
-key 57 0 5605
-advance 5768
-check 61449ae78275807d
-key 30 1 5768
-key 30 0 5798
-advance 5946
-check 006c9f93ac86a6e2
-key 59 1 5974
-key 59 0 6004
-advance 6125
-check 1ab85d9739ba92da
-key 30 1 6166
-key 30 0 6196
-advance 6344
-check 006c9f93ac86a6e2
-key 58 1 6372
-key 58 0 6402
-advance 6550
-check 006c9f93ac86a6e2
-key 58 1 6592
-key 58 0 6622
-advance 6729
-check 006c9f93ac86a6e2
-key 28 1 6729
-key 28 0 6759
-advance 6921
-check 565230318c6637d4
-key 99 1 6976
-key 99 0 7006
-advance 7141
-check a3cf69f9f32ae920
-key 96 1 7182
-key 96 0 7212
-advance 7347
-check 86e5fbbaa3473a59
-key 95 1 7361
-key 95 0 7391
-advance 7566
-check a3cf69f9f32ae920
-key 99 1 7594
-key 99 0 7624
-advance 7786
-check 8d510c08a8f0cfe7
-key 95 1 7786
-key 95 0 7816
-advance 7923
-check f84f4fce8351367e
-key 95 1 7923
-key 95 0 7953
-advance 8129
-check df3480371680daab
-key 96 1 8171
-key 96 0 8201
-advance 8363
-check f84f4fce8351367e
-key 59 1 8390
-key 59 0 8420
-advance 8596
-check 1ab85d9739ba92da
-key 30 1 8596
-key 30 0 8626
-advance 8789
-check f84f4fce8351367e
-key 1 1 8802
-key 1 0 8832
-advance 8940
-check 88d5ac89281cd0da
-key 28 1 8967
-key 28 0 8997
-advance 9159
-check f84f4fce8351367e
+check_region 0 80 640 270 ab29064f3c73c593

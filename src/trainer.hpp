@@ -1,9 +1,10 @@
 #pragma once
 #include "original.hpp"
+#include "profile.hpp"
 #include <string>
+#include <map>
 
 namespace alenka {
-enum class CourseLanguage { Russian, English };
 // Original scan-set-1 input, independent of SDL/host keyboard layout.
 class Trainer {
     friend struct TrainerFixture;
@@ -29,8 +30,24 @@ public:
         return result;
     }
     std::string diagnostic() const;
+    Profile profile() const;
+    void load_profile(const Profile& profile);
+    void validate_profile(const Profile& profile) const;
+    bool save_needed() const { return dirty_; }
+    void saved() { dirty_=false; }
+    bool editing_name() const { return view_==View::edit; }
+    void text_input(const std::string& utf8);
+    enum class ActionKind { None, List, Rename, Create, Switch, Retry, Cancel, Discard };
+    struct Action { ActionKind kind=ActionKind::None; std::string value; };
+    Action take_action() { auto a=action_;action_={};return a; }
+    void show_profiles(const std::vector<Profile>& profiles,const std::string& warning={});
+    void show_error(bool closing);
+    void notify(const std::string& message,bool fatal=false);
+    void edit_error(const std::string& message);
+    void dismiss_error();
+    std::array<unsigned,2> course_lengths() const { return {unsigned(russian_lines_.size()),unsigned(english_lines_.size())}; }
 private:
-    enum class View { intro, help, main, statistics, unavailable };
+    enum class View { intro, help, main, statistics, profile_menu, profiles, edit, error, message };
     const Original& original_;
     std::vector<std::uint16_t> field_;
     Original::Cells cells_{};
@@ -38,9 +55,22 @@ private:
     std::vector<std::vector<std::uint8_t>> lines_;
     std::vector<std::vector<std::uint8_t>> russian_lines_, english_lines_;
     CourseLanguage course_language_ = CourseLanguage::Russian;
-    struct Count { std::uint32_t ticks = 0; std::uint16_t correct = 0, errors = 0; };
-    std::array<Count, 256> counts_{};
-    View view_ = View::intro, help_return_ = View::main;
+    std::array<CharacterCount, 256> counts_{};
+    Profile profile_;
+    bool dirty_=false, creating_=false, closing_error_=false, fatal_message_=false;
+    unsigned dialog_selection_=0;
+    std::vector<Profile> profiles_;
+    std::string edit_name_, dialog_message_;
+    Action action_;
+    struct Text { int x,y; std::string value; unsigned color; bool small; int header=-1; };
+    std::vector<Text> texts_;
+    struct CompactGlyph { unsigned width; std::array<unsigned,5> rows; };
+    std::map<unsigned,CompactGlyph> compact_font_;
+    struct HeaderBitmap { unsigned width=0; std::array<std::uint64_t,5> rows{}; };
+    std::array<HeaderBitmap,6> original_headers_;
+    bool help_extra_=false;
+    bool startup_help_=false;
+    View view_ = View::intro;
     bool running_ = true, menu_ = true, russian_ = true, caps_ = true, num_ = false, scroll_ = false;
     unsigned flags_ = 0x56, hint_ = 0, selection_ = 0, stat_selection_ = 0;
     unsigned line_ = 0, position_ = 0, ghost_ = 0, rhythm_ = 30;
@@ -50,8 +80,8 @@ private:
     unsigned repeat_scan_ = 0;
     bool sound_enabled_ = true;
     Sounds sounds_{};
-    std::uint32_t total_count_ = 0, total_ticks_ = 0;
-    unsigned current_count_ = 0, current_ticks_ = 0;
+    std::uint64_t total_count_ = 0, total_ticks_ = 0;
+    std::uint64_t current_count_ = 0, current_ticks_ = 0;
 
     std::uint16_t constant(unsigned offset) const { return original_.constant(offset); }
     std::uint16_t tile(unsigned index) const { return original_.tile(index); }
@@ -59,10 +89,6 @@ private:
     void fill(int x, int y, int w, int h, unsigned index);
     void blit(int source, int x, int y, int w, int h);
     void move(int sx, int sy, int x, int y, int w, int h);
-    void field_blit(int source, int destination, int w, int h);
-    void number(int destination, unsigned width, std::uint32_t value, unsigned font, unsigned blank);
-    void menu_number(unsigned selection, std::uint32_t value, unsigned width);
-    void menu_toggle(unsigned selection, bool enabled);
     void draw_menu(bool active);
     void draw_main();
     void draw_preview();
@@ -74,6 +100,14 @@ private:
     void draw_statistics();
     void switch_course();
     void draw_stat_selection();
+    void draw_help();
+    void build_compact_font();
+    unsigned compact_width(const std::string& value) const;
+    void dialog_box(int x,int y,int w,int h);
+    void box(int x,int y,int w,int h);
+    void text(int x,int y,const std::string& value,unsigned color=14,bool small=false);
+    void draw_dialog();
+    void dialog_key(unsigned scan);
     void update_setting(int direction, bool space);
     unsigned modifiers() const;
     unsigned layout(unsigned modifiers) const;

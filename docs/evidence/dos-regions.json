@@ -1,0 +1,569 @@
+{
+  "provenance": "Regions extracted from archived native frames only after matching each independently verified full DOS frame hash. Changed menu/help regions are excluded. Original hashes remain in git history.",
+  "checks": [
+    {
+      "scenario": "held.trace",
+      "original_check": 1,
+      "dos_full_frame": "6fbff902fd845db0",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 2,
+      "dos_full_frame": "78b7d2e3efd2c1e8",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "d44410e6f1f65d51"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 3,
+      "dos_full_frame": "4556c2f5b209992e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "fff05ab05717d4f3"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 4,
+      "dos_full_frame": "4ad6f0c6f54e1de3",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "13bd79493d7aa306"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 5,
+      "dos_full_frame": "bbdbfb2d6961373e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "6bc80df5612d5913"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 6,
+      "dos_full_frame": "4ad6f0c6f54e1de3",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "13bd79493d7aa306"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 7,
+      "dos_full_frame": "46f81cf5449d1b16",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "9c9d9ed4e3a6029b"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 8,
+      "dos_full_frame": "78b7d2e3efd2c1e8",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "d44410e6f1f65d51"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 9,
+      "dos_full_frame": "6fbff902fd845db0",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 10,
+      "dos_full_frame": "c1bfe5892acbc260",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "a3da59f93913b941"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 11,
+      "dos_full_frame": "ebfd324ef89c5711",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "c8a7691b0c0b89b8"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 12,
+      "dos_full_frame": "48e9a71783558d49",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "e02c38dcf7613188"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 13,
+      "dos_full_frame": "6670e6d4ce04b259",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "c8a7691b0c0b89b8"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 14,
+      "dos_full_frame": "ed56d5791f0ab7f1",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "b643c10a0962a660"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 15,
+      "dos_full_frame": "6670e6d4ce04b259",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "c8a7691b0c0b89b8"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 16,
+      "dos_full_frame": "17994053fbf2d35f",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "b484e93f023ad49e"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 17,
+      "dos_full_frame": "e74eed337d74e7cf",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "8a87c37d1b0271ce"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 18,
+      "dos_full_frame": "1ab85d9739ba92da",
+      "region": [
+        0,
+        0,
+        640,
+        56
+      ],
+      "region_fnv1a64": "fe2baefdba70cd6f"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 19,
+      "dos_full_frame": "1ab85d9739ba92da",
+      "region": [
+        0,
+        0,
+        640,
+        56
+      ],
+      "region_fnv1a64": "fe2baefdba70cd6f"
+    },
+    {
+      "scenario": "held.trace",
+      "original_check": 21,
+      "dos_full_frame": "ebfd324ef89c5711",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "c8a7691b0c0b89b8"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 1,
+      "dos_full_frame": "6fbff902fd845db0",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 2,
+      "dos_full_frame": "ddf57781c4da205c",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 3,
+      "dos_full_frame": "8b59614df78a3fb9",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 4,
+      "dos_full_frame": "ddf57781c4da205c",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 5,
+      "dos_full_frame": "8b59614df78a3fb9",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 6,
+      "dos_full_frame": "e69474e8ae1f804e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 7,
+      "dos_full_frame": "8659439a101fc083",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 8,
+      "dos_full_frame": "e69474e8ae1f804e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 9,
+      "dos_full_frame": "4f5134fcc85485e6",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 10,
+      "dos_full_frame": "6ebd4c665c9163f4",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "d5593f7eacfd253a"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 11,
+      "dos_full_frame": "91807b70ac377f08",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 12,
+      "dos_full_frame": "4f5134fcc85485e6",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "936339e4d72ce145"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 13,
+      "dos_full_frame": "91807b70ac377f08",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 14,
+      "dos_full_frame": "565230318c6637d4",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 33,
+      "dos_full_frame": "565230318c6637d4",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 34,
+      "dos_full_frame": "a3cf69f9f32ae920",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 36,
+      "dos_full_frame": "a3cf69f9f32ae920",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 37,
+      "dos_full_frame": "8d510c08a8f0cfe7",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 38,
+      "dos_full_frame": "f84f4fce8351367e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 39,
+      "dos_full_frame": "df3480371680daab",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 40,
+      "dos_full_frame": "f84f4fce8351367e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 42,
+      "dos_full_frame": "f84f4fce8351367e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "menus.trace",
+      "original_check": 44,
+      "dos_full_frame": "f84f4fce8351367e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "ab29064f3c73c593"
+    },
+    {
+      "scenario": "statistics-errors.trace",
+      "original_check": 1,
+      "dos_full_frame": "78db50468cfdebde",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "63538da7e823c635"
+    },
+    {
+      "scenario": "statistics-fractions.trace",
+      "original_check": 1,
+      "dos_full_frame": "c98d53613befe498",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "4be84c4bb67fb017"
+    },
+    {
+      "scenario": "statistics-long.trace",
+      "original_check": 1,
+      "dos_full_frame": "d33ef3c18163966e",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "9d10bbb166f56ea5"
+    },
+    {
+      "scenario": "statistics-mixed.trace",
+      "original_check": 1,
+      "dos_full_frame": "7a2195bc8a9b33ce",
+      "region": [
+        0,
+        80,
+        640,
+        270
+      ],
+      "region_fnv1a64": "3dfab0d885c98265"
+    }
+  ]
+}

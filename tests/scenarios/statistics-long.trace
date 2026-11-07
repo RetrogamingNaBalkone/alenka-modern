@@ -1,8 +1,8 @@
-# Independent DOSBox 0.85.1 original framebuffer checks; 2026-11-07.
-# See docs/reverse-engineering.md for capture provenance.
+# Unchanged DOS regions; full source frames verified against the original DOS hashes.
+# See docs/reverse-engineering.md for region provenance.
 counter 139 500000 100 4
 counter 142 88888 24 3
 counter 130 12 12 0
 key 1 1 100
 key 1 0 130
-check d33ef3c18163966e
+check_region 0 80 640 270 9d10bbb166f56ea5

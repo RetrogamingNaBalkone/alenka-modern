@@ -25,14 +25,17 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'English resource checks failed' }
     $flags = @('c++', '-std=c++17', '-O2', '-g0', '-Wall', '-Wextra', '-Werror', '-Isrc', '-Ibuild/generated')
     & "$PSScriptRoot\manifest-resource.ps1" -Manifest "$root\resources\alenka.manifest" -Output "$root\build\bin\alenka.res"
-    & $Zig @flags '-I' "$SDL2Root\include\SDL2" src\main.cpp src\original.cpp src\trainer.cpp build\bin\alenka.res "$SDL2Root\lib\libSDL2.dll.a" '-Wl,--subsystem,windows' '-o' build\bin\alenka.exe
+    $trainerSources = @('src\original.cpp','src\trainer.cpp','src\profile.cpp','src\session.cpp')
+    & $Zig @flags '-I' "$SDL2Root\include\SDL2" src\main.cpp @trainerSources build\bin\alenka.res "$SDL2Root\lib\libSDL2.dll.a" '-Wl,--subsystem,windows' '-o' build\bin\alenka.exe
     if ($LASTEXITCODE -ne 0) { throw 'Application compilation failed' }
     & $Zig @flags tests\core_tests.cpp src\original.cpp '-o' build\bin\core-tests.exe
     if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
-    & $Zig @flags tests\trainer_trace.cpp src\original.cpp src\trainer.cpp '-o' build\bin\trainer-trace.exe
+    & $Zig @flags tests\trainer_trace.cpp @trainerSources '-o' build\bin\trainer-trace.exe
     if ($LASTEXITCODE -ne 0) { throw 'Trainer trace compilation failed' }
-    & $Zig @flags tests\trainer_tests.cpp src\original.cpp src\trainer.cpp '-o' build\bin\trainer-tests.exe
+    & $Zig @flags tests\trainer_tests.cpp @trainerSources '-o' build\bin\trainer-tests.exe
     if ($LASTEXITCODE -ne 0) { throw 'Trainer test compilation failed' }
+    & $Zig @flags tests\profile_tests.cpp @trainerSources '-o' build\bin\profile-tests.exe
+    if ($LASTEXITCODE -ne 0) { throw 'Profile test compilation failed' }
     Copy-Item "$SDL2Root\bin\SDL2.dll" build\bin\SDL2.dll -Force
     & $Zig @flags '-I' "$SDL2Root\include\SDL2" tests\audio_tests.cpp "$SDL2Root\lib\libSDL2.dll.a" '-o' build\bin\audio-tests.exe
     if ($LASTEXITCODE -ne 0) { throw 'Audio test compilation failed' }
@@ -44,6 +47,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Core checks failed' }
     & .\build\bin\trainer-tests.exe original\ALENKA
     if ($LASTEXITCODE -ne 0) { throw 'Trainer checks failed' }
+    & $Python "$PSScriptRoot\verify_ui.py" "$root\build\bin\profile-tests.exe" "$root\original\ALENKA"
+    if ($LASTEXITCODE -ne 0) { throw 'Profile checks failed' }
     foreach ($scenario in Get-ChildItem tests\scenarios\*.trace) {
         & .\build\bin\trainer-trace.exe original\ALENKA $scenario.FullName
         if ($LASTEXITCODE -ne 0) { throw "DOS behavior reference failed: $($scenario.Name)" }
@@ -52,11 +57,10 @@ try {
     Get-Content diagnostics\validation\smoke.stdout
     Get-Content diagnostics\validation\smoke.stderr
     if ($smoke.ExitCode -ne 0) { throw 'SDL smoke failed' }
-    # Recreate the generated release so stale developer files cannot leak into it.
+    # Preserve user data if this unpacked development release has been used.
     $releaseRoot = [IO.Path]::GetFullPath((Join-Path $root 'artifacts\releases'))
     $package = [IO.Path]::GetFullPath((Join-Path $releaseRoot 'alenka-windows'))
     if ($package -ne (Join-Path $releaseRoot 'alenka-windows')) { throw 'Invalid package path' }
-    if (Test-Path -LiteralPath $package) { Remove-Item -LiteralPath $package -Recurse -Force }
     New-Item -ItemType Directory -Force "$package\data","$package\licenses" | Out-Null
     Copy-Item build\bin\alenka.exe,build\bin\SDL2.dll artifacts\releases\alenka-windows -Force
     & $Python "$PSScriptRoot\prepare_resources.py" "$package\data"
@@ -76,7 +80,10 @@ try {
     if (Test-Path -LiteralPath $archiveStage) { Remove-Item -LiteralPath $archiveStage -Recurse -Force }
     New-Item -ItemType Directory -Force $archiveStage | Out-Null
     try {
-        Copy-Item -LiteralPath $package -Destination "$archiveStage\alenka" -Recurse
+        New-Item -ItemType Directory -Force "$archiveStage\alenka\data","$archiveStage\alenka\licenses" | Out-Null
+        Copy-Item "$package\alenka.exe","$package\SDL2.dll","$package\README.txt" "$archiveStage\alenka"
+        Copy-Item "$package\data\ALLE.LIB","$package\data\ALLE.FLD","$package\data\ALLE.TXT","$package\data\ALENKA.DAT" "$archiveStage\alenka\data"
+        Copy-Item "$package\licenses\SDL2.txt" "$archiveStage\alenka\licenses"
         Compress-Archive -LiteralPath "$archiveStage\alenka" -DestinationPath artifacts\releases\alenka-windows.zip -Force
     } finally {
         Remove-Item -LiteralPath $archiveStage -Recurse -Force

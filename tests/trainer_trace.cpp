@@ -37,12 +37,17 @@ int main(int argc,char** argv) {
                 for(auto pixel:trainer.frame()) for(unsigned shift:{0u,8u,16u,24u}) out.put(char(pixel>>shift));
                 if(!out) throw std::runtime_error("Cannot write capture");
             } else if(command=="state") std::cout<<trainer.diagnostic()<<'\n';
-            else if(command=="check") {
+            else if(command=="check"||command=="check_region") {
+                int x=0,y=0,w=640,h=350;
+                if(command=="check_region") script>>x>>y>>w>>h;
+                if(x<0||y<0||w<1||h<1||x+w>640||y+h>350) throw std::runtime_error("Invalid reference region");
                 std::string expected;script>>expected;
                 std::uint64_t hash=14695981039346656037ull;
-                for(auto pixel:trainer.frame()) for(unsigned shift:{0u,8u,16u,24u}) {
-                    hash^=(pixel>>shift)&255;hash*=1099511628211ull;
-                }
+                auto frame=trainer.frame();
+                for(int row=y;row<y+h;++row) for(int col=x;col<x+w;++col)
+                    for(unsigned shift:{0u,8u,16u,24u}) {
+                        hash^=(frame[row*640+col]>>shift)&255;hash*=1099511628211ull;
+                    }
                 if(hash!=std::stoull(expected,nullptr,16))
                     throw std::runtime_error("DOS reference mismatch at check "+std::to_string(checks+1));
                 ++checks;

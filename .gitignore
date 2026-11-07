@@ -6,3 +6,6 @@
 /zig-out/
 __pycache__/
 *.pyc
+/profiles/
+/alenka.ini
+/.alenka.lock
