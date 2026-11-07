@@ -19,7 +19,11 @@ try {
     }
     # Keep Zig's global cache shared across projects (or honor the user's override).
     $env:ZIG_LOCAL_CACHE_DIR = "$root\build\zig-cache"
-    $flags = @('c++', '-std=c++17', '-O2', '-g0', '-Wall', '-Wextra', '-Werror', '-Isrc')
+    & $Python "$PSScriptRoot\embed_course.py" build\generated\english_course.hpp
+    if ($LASTEXITCODE -ne 0) { throw 'English course generation failed' }
+    & $Python -m unittest discover -s tests -p 'test_*.py'
+    if ($LASTEXITCODE -ne 0) { throw 'English resource checks failed' }
+    $flags = @('c++', '-std=c++17', '-O2', '-g0', '-Wall', '-Wextra', '-Werror', '-Isrc', '-Ibuild/generated')
     & "$PSScriptRoot\manifest-resource.ps1" -Manifest "$root\resources\alenka.manifest" -Output "$root\build\bin\alenka.res"
     & $Zig @flags '-I' "$SDL2Root\include\SDL2" src\main.cpp src\original.cpp src\trainer.cpp build\bin\alenka.res "$SDL2Root\lib\libSDL2.dll.a" '-Wl,--subsystem,windows' '-o' build\bin\alenka.exe
     if ($LASTEXITCODE -ne 0) { throw 'Application compilation failed' }

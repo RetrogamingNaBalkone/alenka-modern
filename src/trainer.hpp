@@ -3,6 +3,7 @@
 #include <string>
 
 namespace alenka {
+enum class CourseLanguage { Russian, English };
 // Original scan-set-1 input, independent of SDL/host keyboard layout.
 class Trainer {
     friend struct TrainerFixture;
@@ -16,6 +17,7 @@ public:
     unsigned line() const { return line_; }
     unsigned position() const { return position_; }
     unsigned flags() const { return flags_; }
+    CourseLanguage course_language() const { return course_language_; }
     bool menu() const { return menu_; }
     bool practicing() const { return view_==View::main&&!menu_; }
     struct Sounds { bool error = false, beat = false; };
@@ -34,6 +36,8 @@ private:
     Original::Cells cells_{};
     std::array<bool, 104> keys_{};
     std::vector<std::vector<std::uint8_t>> lines_;
+    std::vector<std::vector<std::uint8_t>> russian_lines_, english_lines_;
+    CourseLanguage course_language_ = CourseLanguage::Russian;
     struct Count { std::uint32_t ticks = 0; std::uint16_t correct = 0, errors = 0; };
     std::array<Count, 256> counts_{};
     View view_ = View::intro, help_return_ = View::main;
@@ -68,6 +72,7 @@ private:
     void show_help();
     void show_statistics();
     void draw_statistics();
+    void switch_course();
     void draw_stat_selection();
     void update_setting(int direction, bool space);
     unsigned modifiers() const;

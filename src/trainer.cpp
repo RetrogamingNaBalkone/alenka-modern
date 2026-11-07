@@ -1,4 +1,5 @@
 #include "trainer.hpp"
+#include "english_course.hpp"
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
@@ -15,6 +16,11 @@ Trainer::Trainer(const Original& original, Screen start) : original_(original), 
     }
     if (!line.empty()) lines_.push_back(line);
     if (lines_.empty()) throw std::runtime_error("Empty original lesson file");
+    russian_lines_=lines_;
+    for(const auto* text:english_lines) {
+        std::string value(text);
+        english_lines_.emplace_back(value.begin(),value.end());
+    }
     if (start == Screen::main) { view_ = View::main; draw_main(); }
     else if (start == Screen::help) { view_ = View::help; blit(0x47e0,0,0,80,44); }
     else blit(0,0,0,80,44);
@@ -163,6 +169,19 @@ void Trainer::draw_stat_selection() {
     blit(0x44c0,int(x+w/2),6,3,1);
     blit(0x43d0,int(x)-1,3,1,2);
     blit(0x43d1,int(x+w)+1,3,1,2);
+}
+void Trainer::switch_course() {
+    course_language_=course_language_==CourseLanguage::Russian?CourseLanguage::English:CourseLanguage::Russian;
+    russian_=course_language_==CourseLanguage::Russian;
+    lines_=russian_?russian_lines_:english_lines_;
+    line_=position_=ghost_=0;
+    counts_={}; total_count_=total_ticks_=current_count_=current_ticks_=0;
+    last_key_=deadline_=repeat_deadline_=0;
+    repeat_scan_=0; sounds_={}; menu_=true;
+    // Keep physical held-key state: repeated key-down events must not toggle
+    // again, and the eventual key-up must not become exercise input.
+    menu_number(5,0,3);
+    draw_statistics();
 }
 void Trainer::draw_statistics() {
     blit(0x3570,0,0,80,44);
@@ -347,6 +366,7 @@ void Trainer::key(unsigned scan,bool pressed,std::uint64_t milliseconds) {
         if(scan==57||scan==72||scan==80||scan==95||scan==96) {
             if(stat_selection_==0) { view_=View::main; draw_main(); }
             else if(stat_selection_==1) { counts_={}; draw_statistics(); }
+            else if(stat_selection_==2) { switch_course(); }
             else if(stat_selection_==3) {
                 sound_enabled_=!sound_enabled_;
                 sounds_={};
@@ -396,6 +416,18 @@ Frame Trainer::frame() const {
         unsigned offset=cells_[(y/8)*80+x/8];
         unsigned ax=(offset%40)*8+x%8, ay=offset/40+y%8;
         pixels[y*frame_width+x]=original_.palette_[original_.atlas_[ay*320+ax]];
+    }
+    if(view_==View::statistics&&course_language_==CourseLanguage::English) {
+        // Replace only the lettering inside the original language button.
+        // Native EGA pixels and the original yellow/red highlight palette.
+        for(int y=25;y<40;++y) for(int x=201;x<233;++x)
+            pixels[y*frame_width+x]=original_.palette_[7];
+        for(unsigned color:{4u,14u}) {
+            int shadow=color==4?1:0;
+            for(int y=0;y<12;++y) for(int x=0;x<23;++x)
+                if(eng_button[y][x]=='#')
+                    pixels[(25+y+shadow)*frame_width+203+x+shadow]=original_.palette_[color];
+        }
     }
     if(view_==View::statistics&&!sound_enabled_) {
         // Cross out the original speaker artwork inside its button. Draw at

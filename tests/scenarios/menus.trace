@@ -77,9 +77,11 @@ check e9038bd796f164b6
 key 57 1 3722
 key 57 0 3752
 advance 3900
-check 0320b04cccd25ccd
-key 30 1 3928
-key 30 0 3958
+# 1.1: language now selects the English course instead of the DOS stub.
+# English lettering and reset are checked by trainer-tests; toggle back here
+# to keep every remaining Russian DOS reference frame comparable.
+key 57 1 3928
+key 57 0 3958
 advance 4120
 check e9038bd796f164b6
 key 99 1 4120

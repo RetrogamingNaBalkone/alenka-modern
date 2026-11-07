@@ -8,7 +8,14 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_custom_target(alenka-assets ALL
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/prepare_resources.py" "${CMAKE_CURRENT_BINARY_DIR}/data"
     VERBATIM)
-add_library(alenka-original src/original.cpp src/trainer.cpp)
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/english_course.hpp"
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/embed_course.py"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/english_course.hpp"
+    DEPENDS tools/embed_course.py resources/lessons-en.txt resources/eng-button.txt
+    VERBATIM)
+add_library(alenka-original src/original.cpp src/trainer.cpp
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/english_course.hpp")
+target_include_directories(alenka-original PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_include_directories(alenka-original PUBLIC src)
 add_executable(alenka src/main.cpp)
 if(WIN32)
@@ -33,6 +40,8 @@ add_executable(audio-tests tests/audio_tests.cpp)
 target_include_directories(audio-tests PRIVATE src)
 target_link_libraries(audio-tests PRIVATE SDL2::SDL2)
 enable_testing()
+add_test(NAME english-resources COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+    -s "${CMAKE_CURRENT_SOURCE_DIR}/tests" -p "test_*.py")
 add_test(NAME audio-playback COMMAND audio-tests)
 add_test(NAME original-resources COMMAND core-tests "${CMAKE_CURRENT_SOURCE_DIR}/original/ALENKA")
 add_test(NAME original-course COMMAND trainer-tests "${CMAKE_CURRENT_SOURCE_DIR}/original/ALENKA")
