@@ -9,6 +9,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <chrono>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -18,6 +19,12 @@
 #endif
 
 namespace {
+std::uint64_t milliseconds() {
+    // Keep 64-bit monotonic time on SDL 2.0.8, without SDL_GetTicks' 49-day wrap.
+    using Clock = std::chrono::steady_clock;
+    static const auto start = Clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now()-start).count();
+}
 void check(int result) { if (result < 0) throw std::runtime_error(SDL_GetError()); }
 template<class T> T* checked(T* value) {
     if (!value) throw std::runtime_error(SDL_GetError());
@@ -308,7 +315,7 @@ int main(int argc, char** argv) {
                 }
                 if(event.type==SDL_KEYDOWN||event.type==SDL_KEYUP) {
                     bool keep_running=true;
-                    keyboard.key(event.key,SDL_GetTicks64(),keep_running);
+                    keyboard.key(event.key,milliseconds(),keep_running);
                     close_requested=close_requested||!keep_running;
                 }
                 if(session) { if(session->update(close_requested)) running=false; }
@@ -319,7 +326,7 @@ int main(int argc, char** argv) {
                 if(!running) break;
             }
             if(!running) break;
-            trainer.advance(SDL_GetTicks64());
+            trainer.advance(milliseconds());
             if(session&&session->update()) running=false;
             const auto sounds=trainer.take_sounds();
             audio.update(focused&&trainer.sound_enabled()&&(trainer.practicing()||sounds.error),sounds.error,sounds.beat);

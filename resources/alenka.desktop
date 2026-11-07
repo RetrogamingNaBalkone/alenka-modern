@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Alenka Modern
+Name[ru]=Алёнка Modern
+Comment=Russian and English keyboard trainer
+Comment[ru]=Клавиатурный тренажёр с русским и английским курсами
+Exec=alenka
+Terminal=false
+Categories=Education;
+Keywords=keyboard;typing;trainer;

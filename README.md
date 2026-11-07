@@ -1,13 +1,14 @@
-# Аленка Modern 2.0
+# Аленка Modern 2.0.1
 
-Клавиатурный тренажёр «Аленка» для современной Windows. Работает без DOSBox
-и установки: распакуйте архив целиком и запустите `alenka.exe`.
+Клавиатурный тренажёр «Аленка» для Windows и Linux. Работает без DOSBox.
+Windows: распакуйте архив целиком и запустите `alenka.exe`.
+Linux: установите `.deb` или распакуйте `.tar.gz` для своей архитектуры.
 
-**[Скачать версию 2.0 для Windows (64 бита)](https://github.com/RetrogamingNaBalkone/alenka-modern/releases/download/v2.0/alenka-modern-2.0-windows-x64.zip)**
+**[Скачать версию 2.0.1: Windows x64, Linux amd64 и i386](https://github.com/RetrogamingNaBalkone/alenka-modern/releases/tag/v2.0.1)**
 
-[Описание релиза и управление](https://github.com/RetrogamingNaBalkone/alenka-modern/releases/tag/v2.0).
+[Описание релиза и управление](docs/releases/2.0.1.md).
 
-Цель — faithful port оригинального DOS-тренажёра для Windows, затем Linux.
+Цель — faithful port оригинального DOS-тренажёра для Windows и Linux.
 Графика, палитра, шрифты, тексты и поведение переносятся из оригинала.
 Новые меню профилей используют исходные цвета, рамки и пиксельную графику.
 
@@ -139,18 +140,36 @@ New-Item -ItemType Directory -Force diagnostics\screenshots | Out-Null
 
 ## Linux
 
-Логика тренажёра и декодер ресурсов не зависят от ОС. Windows-адаптер клавиш
-и DPI изолирован условной компиляцией. Подготовлена CMake-сборка с SDL2:
+Linux-релизы собираются для **amd64 и i386**. Базовая среда — Ubuntu 18.04:
+сборка на более новой системе не гарантирует совместимость её бинарника с 18.04.
+В GitHub Actions добавлен [процесс сборки и проверки](.github/workflows/linux-release.yml):
+отдельные контейнеры каждой архитектуры, тесты, запуск установленного пакета
+от обычного пользователя и дополнительная проверка amd64 на Ubuntu 24.04.
+Первый успешный запуск этого процесса необходим для подтверждения Linux-релиза.
+
+Нативная сборка в Ubuntu 18.04 (для i386 используйте отдельную 32-битную среду):
 
 ```sh
-cmake -S . -B build/linux
-cmake --build build/linux
-ctest --test-dir build/linux --output-on-failure
-cmake --install build/linux --prefix artifacts/releases/alenka-linux
+sudo apt-get update
+sudo apt-get install g++-8 cmake make python3 pkg-config libsdl2-dev dpkg-dev fakeroot xvfb xauth
+CXX=g++-8 bash tools/build-linux.sh
 ```
 
-Linux-сборка пока не проверена запуском. Ресурсы устанавливаются в `data`
-рядом с исполняемым файлом.
+На современных Ubuntu используйте пакет `g++` и запускайте скрипт без `CXX=g++-8`.
+Скрипт не устанавливает зависимости и не меняет настройки системы.
+Результат в `artifacts/releases`: `alenka-modern-2.0.1-linux-<arch>.deb`,
+такой же `.tar.gz` и файл SHA256. В Actions они доступны как артефакты
+`alenka-linux-amd64` и `alenka-linux-i386`; публикация в GitHub Releases выполняется отдельно.
+
+Установите подходящий `.deb` командой `sudo apt install ./имя-пакета.deb`.
+Запускайте `alenka` из терминала или меню приложений. Сохранения находятся
+в `$XDG_DATA_HOME/alenka-modern` (по умолчанию `~/.local/share/alenka-modern`).
+Для архива установите `libsdl2-2.0-0`, распакуйте его целиком, перейдите в папку
+`alenka` и выполните `./alenka`. Архивная версия сохраняет профили в рабочую
+папку запуска; ресурсы ищет в `data` рядом с исполняемым файлом.
+
+Подробности совместимости и разбор присланных правок:
+[Linux-сборка и проверка Ubuntu 18.04](docs/linux-build.md).
 
 ## Разбор оригинала
 

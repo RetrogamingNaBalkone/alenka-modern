@@ -1,0 +1,67 @@
+name: Linux releases
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bionic:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            image: ubuntu:18.04
+            platform: linux/amd64
+          - arch: i386
+            image: i386/ubuntu:18.04
+            platform: linux/386
+    steps:
+      # Node-based actions run on the host, outside the old-glibc containers.
+      - uses: actions/checkout@v4
+      - name: Build and test on Ubuntu 18.04
+        env:
+          IMAGE: ${{ matrix.image }}
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          docker run --rm --platform "$PLATFORM" \
+            -v "$GITHUB_WORKSPACE:/src" -w /src "$IMAGE" bash -euc '
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update
+              apt-get install -y --no-install-recommends g++-8 cmake make python3 pkg-config libsdl2-dev dpkg-dev fakeroot xvfb xauth ca-certificates desktop-file-utils
+              export CXX=g++-8
+              bash tools/build-linux.sh
+              apt-get install -y ./artifacts/releases/*.deb
+              desktop-file-validate /usr/share/applications/alenka.desktop
+              # Run the installed launcher as an ordinary user from a read-only CWD.
+              useradd -m tester
+              su -s /bin/sh tester -c "cd /usr && SDL_AUDIODRIVER=dummy SDL_RENDER_DRIVER=software xvfb-run -a alenka --smoke-test"
+              test -d /home/tester/.local/share/alenka-modern
+            '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alenka-linux-${{ matrix.arch }}
+          path: artifacts/releases/alenka-modern-*-linux-${{ matrix.arch }}.*
+          if-no-files-found: error
+  modern:
+    needs: bionic
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: alenka-linux-amd64
+          path: bionic-release
+      - name: Test Bionic package on Ubuntu 24.04
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xauth desktop-file-utils ./bionic-release/*.deb
+          desktop-file-validate /usr/share/applications/alenka.desktop
+          cd /usr
+          SDL_AUDIODRIVER=dummy SDL_RENDER_DRIVER=software xvfb-run -a alenka --smoke-test
+      - name: Build and test with the current toolchain
+        run: |
+          sudo apt-get install -y g++ cmake make python3 pkg-config libsdl2-dev dpkg-dev fakeroot
+          bash tools/build-linux.sh
