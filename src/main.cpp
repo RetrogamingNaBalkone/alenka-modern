@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "original.hpp"
 #include "trainer.hpp"
+#include "audio.hpp"
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -249,6 +250,8 @@ int main(int argc, char** argv) {
                 alenka::frame_width, alenka::frame_height)), SDL_DestroyTexture);
         if (options.fullscreen) toggle_fullscreen(window.get());
         alenka::Trainer trainer(original,options.screen);
+        alenka::Audio audio;
+        bool focused=(SDL_GetWindowFlags(window.get()) & SDL_WINDOW_INPUT_FOCUS)!=0;
         KeyboardRouter keyboard(window.get(),trainer);
         std::ofstream input_log;
         if(!options.input_log.empty()) {
@@ -267,9 +270,9 @@ int main(int argc, char** argv) {
                 if (event.type == SDL_WINDOWEVENT &&
                     (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST))
                 {
-                    bool focused=event.window.event==SDL_WINDOWEVENT_FOCUS_GAINED;
+                    focused=event.window.event==SDL_WINDOWEVENT_FOCUS_GAINED;
                     cursor(fullscreen(window.get()),focused);
-                    if(!focused) keyboard.blur();
+                    if(!focused) { keyboard.blur(); audio.stop(); trainer.take_sounds(); }
                 }
                 if (event.type != SDL_KEYDOWN && event.type != SDL_KEYUP) continue;
                 if(input_log.is_open()) {
@@ -282,6 +285,8 @@ int main(int argc, char** argv) {
                 dirty=true;
             }
             trainer.advance(SDL_GetTicks64());
+            const auto sounds=trainer.take_sounds();
+            audio.update(focused&&trainer.sound_enabled()&&(trainer.practicing()||sounds.error),sounds.error,sounds.beat);
             dirty=true;
             if (!running || !trainer.running()) break;
             if (dirty) {

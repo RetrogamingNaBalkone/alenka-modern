@@ -30,6 +30,10 @@ try {
     & $Zig @flags tests\trainer_tests.cpp src\original.cpp src\trainer.cpp '-o' build\bin\trainer-tests.exe
     if ($LASTEXITCODE -ne 0) { throw 'Trainer test compilation failed' }
     Copy-Item "$SDL2Root\bin\SDL2.dll" build\bin\SDL2.dll -Force
+    & $Zig @flags '-I' "$SDL2Root\include\SDL2" tests\audio_tests.cpp "$SDL2Root\lib\libSDL2.dll.a" '-o' build\bin\audio-tests.exe
+    if ($LASTEXITCODE -ne 0) { throw 'Audio test compilation failed' }
+    & .\build\bin\audio-tests.exe
+    if ($LASTEXITCODE -ne 0) { throw 'Audio checks failed' }
     $referenceArgs = @()
     if ($Reference) { $referenceArgs = @('--reference', 'diagnostics\validation\reference') }
     & $Python "$PSScriptRoot\frame_storage.py" "$root\build\bin\core-tests.exe" original\ALENKA @referenceArgs

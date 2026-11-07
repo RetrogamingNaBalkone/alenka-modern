@@ -17,6 +17,15 @@ public:
     unsigned position() const { return position_; }
     unsigned flags() const { return flags_; }
     bool menu() const { return menu_; }
+    bool practicing() const { return view_==View::main&&!menu_; }
+    struct Sounds { bool error = false, beat = false; };
+    bool sound_enabled() const { return sound_enabled_; }
+    Sounds take_sounds() {
+        auto result=sounds_; sounds_={};
+        if(view_!=View::main) return {};
+        if(menu_) result.beat=false;
+        return result;
+    }
     std::string diagnostic() const;
 private:
     enum class View { intro, help, main, statistics, unavailable };
@@ -35,6 +44,8 @@ private:
     std::uint64_t now_ = 0, last_key_ = 0, deadline_ = 0;
     std::uint64_t repeat_deadline_ = 0;
     unsigned repeat_scan_ = 0;
+    bool sound_enabled_ = true;
+    Sounds sounds_{};
     std::uint32_t total_count_ = 0, total_ticks_ = 0;
     unsigned current_count_ = 0, current_ticks_ = 0;
 

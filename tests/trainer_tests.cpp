@@ -1,4 +1,5 @@
 #include "trainer.hpp"
+#include "sound.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -22,6 +23,62 @@ int main(int argc,char** argv) {
         expect(argc==2,"Usage: trainer-tests DATA");
         const alenka::Original original(std::filesystem::u8path(argv[1]));
         using alenka::Trainer; using Access=alenka::TrainerFixture;
+        {
+            Trainer sound(original,alenka::Screen::main); std::uint64_t clock=0;
+            expect(sound.sound_enabled(),"Sound must start enabled");
+            sound.advance(100); expect(!sound.take_sounds().beat,"Menu emitted metronome");
+            tap(sound,28,clock); expect(sound.take_sounds().beat,"Exercise start lost beat");
+            tap(sound,32,clock);
+            expect(sound.take_sounds().error&&sound.position()==0,"Rejected typo must sound without consuming input");
+            expect(!sound.take_sounds().error,"Error cue was not drained");
+            tap(sound,37,clock); expect(!sound.take_sounds().error,"Correct key sounded as error");
+            sound.advance(time_for_tick(145)); expect(!sound.take_sounds().beat,"Metronome fired early");
+            sound.advance(time_for_tick(146)); expect(sound.take_sounds().beat,"Metronome missed original rhythm deadline");
+            sound.advance(time_for_tick(1000));
+            expect(sound.take_sounds().beat&&!sound.take_sounds().beat,"Catch-up must coalesce beats");
+        }
+        {
+            Trainer sound(original,alenka::Screen::main); std::uint64_t clock=0;
+            tap(sound,1,clock); tap(sound,99,clock); tap(sound,99,clock); // Speaker.
+            const auto enabled_frame=sound.frame();
+            tap(sound,57,clock);
+            expect(!sound.sound_enabled()&&sound.frame()!=enabled_frame,"Speaker must display muted state");
+            tap(sound,28,clock); tap(sound,28,clock); tap(sound,32,clock);
+            sound.advance(time_for_tick(146));
+            auto cues=sound.take_sounds();
+            expect(!cues.error&&!cues.beat,"Muted trainer emitted audio");
+            clock=time_for_tick(146);
+            tap(sound,1,clock); tap(sound,99,clock); tap(sound,99,clock); tap(sound,57,clock);
+            expect(sound.sound_enabled()&&Access::total(sound)==0,"Unmute changed input statistics");
+        }
+        {
+            Trainer sound(original,alenka::Screen::main); std::uint64_t clock=0;
+            tap(sound,99,clock); tap(sound,99,clock); tap(sound,95,clock); tap(sound,28,clock);
+            sound.take_sounds(); sound.advance(time_for_tick(146));
+            expect(sound.take_sounds().error,"Missed paced character must sound as error");
+        }
+        {
+            Trainer sound(original,alenka::Screen::main); std::uint64_t clock=0;
+            for(unsigned i=0;i<6;++i) tap(sound,99,clock);
+            for(unsigned i=0;i<37;++i) tap(sound,95,clock); // Rhythm 400.
+            tap(sound,28,clock); sound.take_sounds();
+            // Deadline is based on the actual start tick, with integer 4380/rhythm.
+            unsigned start=unsigned((clock-1)*1193182/16384000);
+            sound.advance(time_for_tick(start+9)); expect(!sound.take_sounds().beat,"Fast rhythm fired early");
+            sound.advance(time_for_tick(start+10)); expect(sound.take_sounds().beat,"Rhythm setting did not change beat interval");
+            clock=time_for_tick(start+10);
+            tap(sound,59,clock); sound.take_sounds(); sound.advance(time_for_tick(start+100));
+            expect(!sound.take_sounds().beat,"Help emitted metronome");
+        }
+        for(bool error:{false,true}) {
+            const auto samples=alenka::sound_samples(error);
+            expect(samples.size()==(error?3840u:720u),"Cue duration changed");
+            expect(samples.front()==0&&samples.back()==0,"Cue lacks smooth endpoints");
+            unsigned peak=0;
+            for(auto sample:samples) peak=std::max(peak,unsigned(std::abs(int(sample))));
+            expect(peak>1000&&peak<=6000,"Cue is silent or clips");
+        }
+        std::cout<<"Sound events, mute, rhythm and synthesized PCM checks passed\n";
         Trainer trainer(original,alenka::Screen::main);
         std::uint64_t time=100;
         unsigned typed=0;

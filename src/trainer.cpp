@@ -239,9 +239,11 @@ void Trainer::start_line() {
     put(5,13,constant(0xb4));
     draw_preview();
     deadline_=now_*1193182/16384000+4380/rhythm_;
+    if(sound_enabled_) sounds_.beat=true;
 }
 void Trainer::consume(unsigned scan,bool timeout) {
     if(expected()==13) return;
+    if(timeout&&sound_enabled_) sounds_.error=true;
     unsigned c=expected();
     bool correct=!timeout&&scan==expected_key();
     auto tick=now_*1193182/16384000;
@@ -289,6 +291,7 @@ void Trainer::advance(std::uint64_t milliseconds) {
         ++repeat_deadline_;
     }
     while(view_==View::main&&!menu_&&deadline_&&now_*1193182/16384000>=deadline_) {
+        if(sound_enabled_) sounds_.beat=true;
         auto current=now_;
         auto due=deadline_;
         now_=(due*16384000+1193181)/1193182;
@@ -344,6 +347,11 @@ void Trainer::key(unsigned scan,bool pressed,std::uint64_t milliseconds) {
         if(scan==57||scan==72||scan==80||scan==95||scan==96) {
             if(stat_selection_==0) { view_=View::main; draw_main(); }
             else if(stat_selection_==1) { counts_={}; draw_statistics(); }
+            else if(stat_selection_==3) {
+                sound_enabled_=!sound_enabled_;
+                sounds_={};
+                draw_statistics();
+            }
             else {
                 help_return_=View::statistics; view_=View::unavailable;
                 blit(0x45bc,35,4,37,7);
@@ -377,7 +385,10 @@ void Trainer::key(unsigned scan,bool pressed,std::uint64_t milliseconds) {
         }
         if(scan==57) { update_setting(1,true); return; }
         if(scan==expected_key()) { start_line(); consume(scan,false); }
-    } else if(scan==expected_key() || !(flags_&0x10)) consume(scan,false);
+    } else {
+        if(scan!=expected_key()&&sound_enabled_) sounds_.error=true;
+        if(scan==expected_key() || !(flags_&0x10)) consume(scan,false);
+    }
 }
 Frame Trainer::frame() const {
     Frame pixels{};
@@ -385,6 +396,17 @@ Frame Trainer::frame() const {
         unsigned offset=cells_[(y/8)*80+x/8];
         unsigned ax=(offset%40)*8+x%8, ay=offset/40+y%8;
         pixels[y*frame_width+x]=original_.palette_[original_.atlas_[ay*320+ax]];
+    }
+    if(view_==View::statistics&&!sound_enabled_) {
+        // Cross out the original speaker artwork inside its button. Draw at
+        // native EGA resolution so the stroke scales with the original pixels.
+        for(int x=270;x<=302;++x) {
+            const int y=39-(x-270)/2;
+            pixels[(y-1)*frame_width+x]=original_.palette_[15];
+            pixels[y*frame_width+x]=original_.palette_[12];
+            pixels[(y+1)*frame_width+x]=original_.palette_[12];
+            pixels[(y+2)*frame_width+x]=original_.palette_[15];
+        }
     }
     return pixels;
 }
