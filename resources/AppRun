@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+# Resolve before changing CWD: AppImages are mounted in a different place each run.
+appdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+data_home=${XDG_DATA_HOME:-${HOME:?HOME is not set}/.local/share}
+case "$data_home" in /*) ;; *) echo 'XDG_DATA_HOME must be an absolute path' >&2; exit 1;; esac
+mkdir -p "$data_home/alenka-modern"
+cd "$data_home/alenka-modern"
+export LD_LIBRARY_PATH="$appdir/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+exec "$appdir/usr/bin/alenka" --data "$appdir/usr/share/alenka-modern" "$@"

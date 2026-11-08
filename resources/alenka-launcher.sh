@@ -9,4 +9,4 @@ fi
 case "$data_home" in /*) ;; *) echo 'XDG_DATA_HOME must be an absolute path' >&2; exit 1;; esac
 mkdir -p "$data_home/alenka-modern"
 cd "$data_home/alenka-modern"
-exec /usr/lib/alenka-modern/alenka "$@"
+exec /usr/lib/alenka-modern/alenka --data /usr/share/alenka-modern "$@"

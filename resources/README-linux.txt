@@ -1,13 +1,24 @@
-Аленка Modern 2.0.1 — клавиатурный тренажёр для Linux
+Аленка Modern 2.0.2 — клавиатурный тренажёр для Linux
 
 Установка пакета Debian/Ubuntu
 
-sudo apt install ./alenka-modern-2.0.1-linux-amd64.deb
+sudo apt install ./alenka-modern-2.0.2-linux-amd64.deb
 Для 32-битной системы выберите пакет i386.
 Запускайте «Алёнку Modern» из меню приложений или командой alenka.
 Сохранения находятся в $XDG_DATA_HOME/alenka-modern либо
 в ~/.local/share/alenka-modern, если XDG_DATA_HOME не задана.
 Пакет не удаляет сохранения при обновлении и удалении программы.
+
+Запуск AppImage
+
+Для 64-битной системы выберите x86_64, для 32-битной — i686.
+chmod +x alenka-modern-2.0.2-x86_64.AppImage
+./alenka-modern-2.0.2-x86_64.AppImage
+SDL2 и библиотека C++ включены в AppImage. Сохранения находятся в том же
+пользовательском каталоге, что и у deb; файл AppImage можно переносить.
+Не запускайте программу через sudo.
+Если в системе недоступен FUSE, используйте:
+./alenka-modern-2.0.2-x86_64.AppImage --appimage-extract-and-run
 
 Запуск из tar.gz
 

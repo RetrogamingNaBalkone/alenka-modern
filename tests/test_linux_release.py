@@ -66,3 +66,36 @@ class LinuxReleaseTests(unittest.TestCase):
         (self.package / 'alenka').write_bytes(elf)
         with self.assertRaisesRegex(ValueError, 'Tarball differs'):
             release.verify(self.package, archive)
+
+    def stage_deb(self):
+        root = self.root / 'deb'
+        for name, source in release.deb_files(self.package).items():
+            target = root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
+            if name in ('usr/bin/alenka', 'usr/lib/alenka-modern/alenka'):
+                target.chmod(0o755)
+        return root
+
+    def test_deb_uses_shared_resources_and_matches_portable(self):
+        root = self.stage_deb()
+        release.verify(self.package, self.archive(), 'amd64', root)
+        (root / 'usr/share/alenka-modern/ALLE.TXT').write_bytes(b'changed')
+        with self.assertRaisesRegex(ValueError, 'Deb differs'):
+            release.verify(self.package, deb_root=root)
+
+    def test_deb_rejects_old_resource_location(self):
+        root = self.stage_deb()
+        (root / 'usr/share/alenka-modern').rename(root / 'usr/lib/alenka-modern/data')
+        with self.assertRaisesRegex(ValueError, 'deb contents'):
+            release.verify(self.package, deb_root=root)
+
+    def test_i386_binary_is_checked_in_both_packages(self):
+        elf = bytearray((self.package / 'alenka').read_bytes())
+        elf[4] = 1
+        struct.pack_into('<H', elf, 18, 3)
+        (self.package / 'alenka').write_bytes(elf)
+        root = self.stage_deb()
+        release.verify(self.package, self.archive(), 'i386', root)
+        with self.assertRaisesRegex(ValueError, 'architecture'):
+            release.verify(self.package, arch='amd64', deb_root=root)

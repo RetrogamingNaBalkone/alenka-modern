@@ -1,2 +1,3 @@
 // Embed the process manifest as RT_MANIFEST / CREATEPROCESS_MANIFEST_RESOURCE_ID.
 1 24 "alenka.manifest"
+1 ICON "alenka.ico"

@@ -1,6 +1,9 @@
 * text=auto
 *.sh text eol=lf
 *.yml text eol=lf
+*.desktop text eol=lf
+*.metainfo.xml text eol=lf
+resources/AppRun text eol=lf
 
 # Preserve original resources byte for byte, including DOS line endings.
 original/** -text -diff

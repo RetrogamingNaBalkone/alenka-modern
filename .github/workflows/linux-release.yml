@@ -13,11 +13,17 @@ jobs:
       matrix:
         include:
           - arch: amd64
+            target: amd64
             image: ubuntu:18.04
             platform: linux/amd64
           - arch: i386
+            target: i386
             image: i386/ubuntu:18.04
             platform: linux/386
+          - arch: i386-cross
+            target: i386
+            image: ubuntu:18.04
+            platform: linux/amd64
     steps:
       # Node-based actions run on the host, outside the old-glibc containers.
       - uses: actions/checkout@v4
@@ -25,25 +31,41 @@ jobs:
         env:
           IMAGE: ${{ matrix.image }}
           PLATFORM: ${{ matrix.platform }}
+          TARGET_ARCH: ${{ matrix.target }}
         run: |
           docker run --rm --platform "$PLATFORM" \
+            -e TARGET_ARCH="$TARGET_ARCH" \
             -v "$GITHUB_WORKSPACE:/src" -w /src "$IMAGE" bash -euc '
               export DEBIAN_FRONTEND=noninteractive
+              if [ "$TARGET_ARCH" != "$(dpkg --print-architecture)" ]; then
+                dpkg --add-architecture "$TARGET_ARCH"
+                COMPILER=g++-8-multilib
+              else
+                COMPILER=g++-8
+              fi
               apt-get update
-              apt-get install -y --no-install-recommends g++-8 cmake make python3 pkg-config libsdl2-dev dpkg-dev fakeroot xvfb xauth ca-certificates desktop-file-utils
+              apt-get install -y --no-install-recommends "$COMPILER" cmake make python3 pkg-config "libsdl2-dev:$TARGET_ARCH" "libstdc++6:$TARGET_ARCH" dpkg-dev fakeroot xvfb xauth ca-certificates desktop-file-utils appstream file xdotool openbox x11-utils
               export CXX=g++-8
-              bash tools/build-linux.sh
+              bash tools/build-linux.sh "$TARGET_ARCH"
+              test "$(dpkg-deb -f ./artifacts/releases/*.deb Architecture)" = "$TARGET_ARCH"
               apt-get install -y ./artifacts/releases/*.deb
               desktop-file-validate /usr/share/applications/alenka.desktop
               # Run the installed launcher as an ordinary user from a read-only CWD.
               useradd -m tester
               su -s /bin/sh tester -c "cd /usr && SDL_AUDIODRIVER=dummy SDL_RENDER_DRIVER=software xvfb-run -a alenka --smoke-test"
               test -d /home/tester/.local/share/alenka-modern
+              if [ "$TARGET_ARCH" = "$(dpkg --print-architecture)" ]; then
+                bash tools/build-appimage.sh
+                chmod 1777 build/work
+                su -s /bin/sh tester -c "python3 tools/test_appimage_runtime.py artifacts/releases/*.AppImage"
+              fi
             '
       - uses: actions/upload-artifact@v4
         with:
           name: alenka-linux-${{ matrix.arch }}
-          path: artifacts/releases/alenka-modern-*-linux-${{ matrix.arch }}.*
+          path: |
+            artifacts/releases/alenka-modern-*-linux-${{ matrix.target }}.*
+            artifacts/releases/*.AppImage*
           if-no-files-found: error
   modern:
     needs: bionic
@@ -65,3 +87,14 @@ jobs:
         run: |
           sudo apt-get install -y g++ cmake make python3 pkg-config libsdl2-dev dpkg-dev fakeroot
           bash tools/build-linux.sh
+      - name: Test AppImage on Ubuntu 24.04 without system SDL2
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/src" -w /src ubuntu:24.04 bash -euc '
+            apt-get update
+            apt-get install -y --no-install-recommends python3 xvfb xauth xdotool openbox x11-utils ca-certificates
+            useradd -m tester
+            mkdir -p build/work
+            chmod 1777 build/work
+            su -s /bin/sh tester -c "python3 tools/test_appimage_runtime.py bionic-release/*.AppImage"
+            su -s /bin/sh tester -c "python3 tools/test_appimage_runtime.py bionic-release/*.AppImage --extract-and-run"
+          '

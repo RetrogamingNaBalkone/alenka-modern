@@ -5,6 +5,7 @@ Name[ru]=Алёнка Modern
 Comment=Russian and English keyboard trainer
 Comment[ru]=Клавиатурный тренажёр с русским и английским курсами
 Exec=alenka
+Icon=alenka
 Terminal=false
 Categories=Education;
 Keywords=keyboard;typing;trainer;

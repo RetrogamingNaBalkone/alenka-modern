@@ -10,7 +10,7 @@ FILES = {'alenka', 'README.txt', 'LICENSE', 'data/ALLE.LIB', 'data/ALLE.FLD',
          'data/ALLE.TXT', 'data/ALENKA.DAT'}
 
 
-def verify(package, archive=None, arch=None):
+def verify(package, archive=None, arch=None, deb_root=None):
     actual = {p.relative_to(package).as_posix() for p in package.rglob('*') if p.is_file()}
     if actual != FILES or any(p.is_symlink() for p in package.rglob('*')):
         raise ValueError('Unexpected Linux release contents: ' + repr(actual ^ FILES))
@@ -41,7 +41,36 @@ def verify(package, archive=None, arch=None):
                     raise ValueError('Tarball differs: ' + member.name)
                 if member.name == 'alenka/alenka' and not member.mode & 0o111:
                     raise ValueError('Tarball executable mode lost')
+    if deb_root is not None:
+        verify_deb(deb_root, package)
     print('Linux release verified: ' + detected)
+
+
+def deb_files(package):
+    """Map system package paths to the independently verified portable files."""
+    files = {'usr/lib/alenka-modern/alenka': package / 'alenka',
+             'usr/share/doc/alenka-modern/README.txt': package / 'README.txt',
+             'usr/share/doc/alenka-modern/copyright': package / 'LICENSE',
+             'usr/bin/alenka': ROOT / 'resources/alenka-launcher.sh',
+             'usr/share/applications/alenka.desktop': ROOT / 'resources/alenka.desktop',
+             'usr/share/icons/hicolor/256x256/apps/alenka.png': ROOT / 'resources/alenka.png'}
+    files.update(('usr/share/alenka-modern/' + name[5:], package / name)
+                 for name in FILES if name.startswith('data/'))
+    return files
+
+
+def verify_deb(root, package):
+    files = deb_files(package)
+    actual = {p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()}
+    if actual != set(files) or any(p.is_symlink() for p in root.rglob('*')):
+        raise ValueError('Unexpected deb contents: ' + repr(actual ^ set(files)))
+    for name, source in files.items():
+        target = root / name
+        if target.read_bytes() != source.read_bytes():
+            raise ValueError('Deb differs: ' + name)
+        if os.name != 'nt' and name in ('usr/bin/alenka', 'usr/lib/alenka-modern/alenka'):
+            if not target.stat().st_mode & 0o111:
+                raise ValueError('Deb executable mode lost: ' + name)
 
 
 if __name__ == '__main__':
@@ -49,5 +78,6 @@ if __name__ == '__main__':
     parser.add_argument('package', type=Path)
     parser.add_argument('--archive', type=Path)
     parser.add_argument('--arch', choices=['amd64', 'i386'])
+    parser.add_argument('--deb-root', type=Path, help='Extracted deb filesystem root')
     args = parser.parse_args()
-    verify(args.package, args.archive, args.arch)
+    verify(args.package, args.archive, args.arch, args.deb_root)

@@ -4,6 +4,8 @@
 #include "trainer.hpp"
 #include "audio.hpp"
 #include "session.hpp"
+#include "../resources/app_icon.hpp"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -270,6 +272,28 @@ int main(int argc, char** argv) {
         std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window(
             checked(SDL_CreateWindow("\xD0\x90\xD0\xBB\xD0\xB5\xD0\xBD\xD0\xBA\xD0\xB0", SDL_WINDOWPOS_CENTERED,
                 SDL_WINDOWPOS_CENTERED, options.width, options.height, flags)), SDL_DestroyWindow);
+        {
+            std::unique_ptr<SDL_Surface, decltype(&SDL_FreeSurface)> icon(
+                checked(SDL_CreateRGBSurfaceWithFormat(0, 64, 64, 24, SDL_PIXELFORMAT_RGB24)), SDL_FreeSurface);
+            for (int y = 0; y < 64; ++y)
+                std::copy_n(alenka::app_icon_rgb + y*64*3, 64*3,
+                    static_cast<unsigned char*>(icon->pixels) + y*icon->pitch);
+            SDL_SetWindowIcon(window.get(), icon.get());
+#ifdef _WIN32
+            // Use the hand-sized ICO frames for the title bar and Alt+Tab.
+            SDL_SysWMinfo info;
+            SDL_VERSION(&info.version);
+            if (SDL_GetWindowWMInfo(window.get(), &info)) {
+                for (bool small : {false, true}) {
+                    auto native_icon = LoadImageW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(1), IMAGE_ICON,
+                        GetSystemMetrics(small ? SM_CXSMICON : SM_CXICON),
+                        GetSystemMetrics(small ? SM_CYSMICON : SM_CYICON), LR_SHARED);
+                    if (native_icon) SendMessageW(info.info.win.window, WM_SETICON,
+                        small ? ICON_SMALL : ICON_BIG, reinterpret_cast<LPARAM>(native_icon));
+                }
+            }
+#endif
+        }
         SDL_Renderer* raw = SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (!raw) raw = SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_SOFTWARE);
         std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer(checked(raw), SDL_DestroyRenderer);

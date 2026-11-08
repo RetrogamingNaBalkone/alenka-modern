@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.RetrogamingNaBalkone.alenka-modern</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Alenka Modern</name>
+  <name xml:lang="ru">Алёнка Modern</name>
+  <summary>Practice typing with Russian and English courses</summary>
+  <summary xml:lang="ru">Клавиатурный тренажёр с русским и английским курсами</summary>
+  <description>
+    <p>A native port of the Alenka DOS keyboard trainer, with its original pixel graphics,
+    Russian and English courses, profiles, progress statistics and sound feedback.</p>
+    <p xml:lang="ru">Порт клавиатурного тренажёра «Алёнка» с исходной пиксельной графикой,
+    русским и английским курсами, профилями, статистикой и звуковыми сигналами.</p>
+  </description>
+  <launchable type="desktop-id">alenka.desktop</launchable>
+  <url type="homepage">https://github.com/RetrogamingNaBalkone/alenka-modern</url>
+  <url type="bugtracker">https://github.com/RetrogamingNaBalkone/alenka-modern/issues</url>
+  <provides><binary>alenka</binary></provides>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">none</content_attribute>
+  </content_rating>
+  <releases><release version="2.0.2" date="2026-11-08"/></releases>
+</component>

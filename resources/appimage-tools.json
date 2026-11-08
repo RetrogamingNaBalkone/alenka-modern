@@ -1,0 +1,12 @@
+{
+  "amd64": {
+    "linuxdeploy": {"asset": 699514588, "project": "linuxdeploy/linuxdeploy", "sha256": "df908b19f1ed1cdafa79508d415aa12d6c56ce4d56d4149aa8c09286718706e5"},
+    "appimagetool": {"asset": 715388534, "project": "AppImage/appimagetool", "sha256": "e8c1169c4af66c3184d7ee110713d4be04befe671fa358e2c1591ee840553b03"},
+    "runtime": {"asset": 657374641, "project": "AppImage/type2-runtime", "sha256": "617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46"}
+  },
+  "i386": {
+    "linuxdeploy": {"asset": 699514402, "project": "linuxdeploy/linuxdeploy", "sha256": "a93f1be3225e98fedfdcde7d9cd63e4e027e5731b15fccdd9ca0b89ebb367ac8"},
+    "appimagetool": {"asset": 715388417, "project": "AppImage/appimagetool", "sha256": "77c4ea4a5dd573a2c064ec074628829f897dd40c8f3d91c37adf6c2d3fb2141e"},
+    "runtime": {"asset": 657374368, "project": "AppImage/type2-runtime", "sha256": "a41afa671f6fcac781bc25f87e55104315ff0f2472d2cb610a1915db0d786b36"}
+  }
+}

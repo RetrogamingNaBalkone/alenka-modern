@@ -1,12 +1,13 @@
-# Аленка Modern 2.0.1
+# Аленка Modern 2.0.2
 
 Клавиатурный тренажёр «Аленка» для Windows и Linux. Работает без DOSBox.
 Windows: распакуйте архив целиком и запустите `alenka.exe`.
-Linux: установите `.deb` или распакуйте `.tar.gz` для своей архитектуры.
+Linux: запустите AppImage, установите `.deb` или распакуйте `.tar.gz` для своей архитектуры.
 
-**[Скачать версию 2.0.1: Windows x64, Linux amd64 и i386](https://github.com/RetrogamingNaBalkone/alenka-modern/releases/tag/v2.0.1)**
+**[Скачать версию 2.0.2: Windows x64, Linux amd64/i386 и AppImage](https://github.com/RetrogamingNaBalkone/alenka-modern/releases/tag/v2.0.2)**
 
-[Описание релиза и управление](docs/releases/2.0.1.md).
+В версии 2.0.2 исправлена упаковка Linux и добавлен AppImage.
+[Изменения и запуск 2.0.2](docs/releases/2.0.2.md).
 
 Цель — faithful port оригинального DOS-тренажёра для Windows и Linux.
 Графика, палитра, шрифты, тексты и поведение переносятся из оригинала.
@@ -157,9 +158,20 @@ CXX=g++-8 bash tools/build-linux.sh
 
 На современных Ubuntu используйте пакет `g++` и запускайте скрипт без `CXX=g++-8`.
 Скрипт не устанавливает зависимости и не меняет настройки системы.
-Результат в `artifacts/releases`: `alenka-modern-2.0.1-linux-<arch>.deb`,
+Результат в `artifacts/releases`: `alenka-modern-2.0.2-linux-<arch>.deb`,
 такой же `.tar.gz` и файл SHA256. В Actions они доступны как артефакты
 `alenka-linux-amd64` и `alenka-linux-i386`; публикация в GitHub Releases выполняется отдельно.
+
+Сборка i386 на amd64: `bash tools/build-linux.sh i386` после установки
+GCC multilib и SDL2 для i386. Для Ubuntu 18.04 используйте отдельное окружение:
+dev-пакеты Mir двух архитектур конфликтуют. Подробности — в [инструкции](docs/linux-build.md).
+
+После нативной сборки команда `bash tools/build-appimage.sh` создаёт
+`alenka-modern-2.0.2-x86_64.AppImage` или `alenka-modern-2.0.2-i686.AppImage`.
+Нужны дополнительные инструменты упаковки, перечисленные в [инструкции](docs/linux-build.md).
+Для запуска выполните `chmod +x имя.AppImage`, затем `./имя.AppImage`.
+SDL2 включена в файл; сохранения используются те же, что у установленного deb.
+При отсутствии FUSE запустите `./имя.AppImage --appimage-extract-and-run`.
 
 Установите подходящий `.deb` командой `sudo apt install ./имя-пакета.deb`.
 Запускайте `alenka` из терминала или меню приложений. Сохранения находятся
